@@ -1,0 +1,4 @@
+content	desopa	content/
+overlay	chrome://browser/content/browser.xul	chrome://desopa/content/overlay.xul
+
+locale	desopa	en-US	locale/en-US/

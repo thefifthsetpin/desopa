@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+  
+    <em:id>desopa@congress.public</em:id>
+    <em:name>DNS Evasion Stopping Organizational Predators Application</em:name>
+    <em:version>1.0</em:version>
+    <em:description>Oh come on.</em:description>
+    <em:creator>Net citizen</em:creator>
+    <!-- optional items -->
+    <em:contributor>A person</em:contributor>
+    <em:homepageURL>http://house.gov</em:homepageURL>
+
+    <!-- Firefox -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>3.6</em:minVersion>
+        <em:maxVersion>8.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+  </Description>
+
+</RDF>

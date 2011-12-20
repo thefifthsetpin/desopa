@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://desopa/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://desopa/locale/overlay.dtd">
+<overlay id="desopa-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 	<script src="overlay.js"/>
+	<window id="main-window">
+
+																																				
+<hbox id="desopa-box" style="font-size:22px;font-weight:600;height:40px;width:100%;background-color:green;display:none;text-align:left;color:#f7f7f7;padding-top:5px;" > Resolving and caching IP address. This may take a few seconds.</hbox>
+</window>
+ 	<statusbar id="status-bar" >
+  	<statusbarpanel id="desopa-panel" label="DeSopa off" style="background-color:yellow;cursor:pointer;width:120px;text-align:center;" onclick="DeSopafy(this)"/>
+ 	</statusbar>
+
+</overlay>
