@@ -33,7 +33,7 @@ var DeSopaListener = false;
 	var deTab = false;
 	var deIP = {};
 	var deCache = {};
-  var deConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+  	var deConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 
 	//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
 	var DeReq = function(u,f,d,x){ x=this.ActiveXObject;x=new(x?x:XMLHttpRequest)('Microsoft.XMLHTTP');x.timeout=15000;x.open(d?'POST':'GET',u,1);x.setRequestHeader('Content-type','application/x-www-form-urlencoded');x.onreadystatechange=function(){x.readyState>3&&f?f(x.responseText,x):0};x.send(d)};
@@ -62,6 +62,32 @@ var DeSopaListener = false;
 		}
 	};
 
+	HttpRequestObserver = {
+		observe: function(subject, topic, data){
+    			if (topic == "http-on-modify-request") {
+      				var httpChannel = subject.QueryInterface(Components.interfaces.nsIHttpChannel).setRequestHeader('Host', deDomain, false);
+    			}
+  		},
+    
+		registered : false,
+  	
+		get observerService() {
+    			return Components.classes["@mozilla.org/observer-service;1"]
+                     .getService(Components.interfaces.nsIObserverService);
+  		},
+
+  		register: function() {
+    			this.observerService.addObserver(this, "http-on-modify-request", false);
+    			this.registered = true;
+  		},
+
+  		unregister: function() {
+    			this.observerService.removeObserver(this, "http-on-modify-request");
+    			this.registered = false;
+  		}
+	};
+
+
 	var DeNS = [
 		function(){DeReq('http://www.kloth.net/services/nslookup.php',function(d){ DeSyn('0', d.match(/Address\:[\r\n\s\t]*([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[\r\n\s\t]*<\/pre>/i))},'d='+deDomain+'&n=localhost&q=A')},
 		function(){DeReq('http://enc.com.au/itools/nslookup.php',function(d){ DeSyn('1', d.match(/"webrow".*network=([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[^0-9]/i))},'domain='+deDomain)},
@@ -74,11 +100,10 @@ var DeSopaListener = false;
 	};
 
 	var DeSubRe = function(){
-		var re = new RegExp( deDomain.replace(/\./g,'\.'),'gi');
-		deWindow.location.href=DeRe(deURL);
 		subContent = true;	
 		document.getElementById('desopa-box').style.display='none';
-			
+		HttpRequestObserver.register();
+		deWindow.location.href=DeRe(deURL);						
 	};
 	
 	DeSopafy = function(o){
@@ -111,6 +136,7 @@ var DeSopaListener = false;
   			//foo.1.2.3.4 won't work anyway. Need a workaround for subdomains.
 				if(location.spec.match(/^(?:[a-z0-9]+:\/\/)?(?:[a-z0-9\-]+\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i)){	
 					subContent = true;
+					if(!HttpRequestObserver.registered) HttpRequestObserver.register();
 				}else{
 					deURL = location.spec;
 					deDomain = deURL.replace(/^(?:[a-z0-9]+:\/\/)|(?:\/.*)$/ig,'');
@@ -133,6 +159,7 @@ var DeSopaListener = false;
   	onStateChange: function(progress, request, flag, status)  {  		
 			if(DE_STATE_START && deOn && flag && subContent && request!=null && request.name.match(/^(?:[a-z0-9]+:\/\/)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i) && deWindow.document.head.innerHTML!=null){
 				subContent = false;
+				if(HttpRequestObserver.registered) HttpRequestObserver.unregister();
 				deWindow.document.head.innerHTML = DeRe(deWindow.document.head.innerHTML);
 				deWindow.document.body.innerHTML = DeRe(deWindow.document.body.innerHTML);  	
 			}  
