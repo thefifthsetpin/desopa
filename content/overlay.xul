@@ -10,7 +10,7 @@
 <hbox id="desopa-box" style="font-size:22px;font-weight:600;height:40px;width:100%;background-color:green;display:none;text-align:left;color:#f7f7f7;padding-top:5px;" > Resolving and caching IP address. This may take a few seconds.</hbox>
 </window>
  	<statusbar id="status-bar" >
-  	<statusbarpanel id="desopa-panel" label="DeSopa off" style="background-color:yellow;cursor:pointer;width:120px;text-align:center;" onclick="DeSopafy(this)"/>
+  	<statusbarpanel id="desopa-panel" label="DeSopa off" style="background-color:#EDF9FA;cursor:pointer;width:100px;text-align:center;border-left:1px solid #ccc;border-right:1px solid #ccc;" onclick="DeSopafy(this)"/>
  	</statusbar>
 
 </overlay>
