@@ -19,6 +19,7 @@
 
 var DeSopafy = false;
 var DeSopaListener = false;
+var HttpRequestObserver = false;
 (function(window,document,undefined){
 
 	const DE_STATE_START = Components.interfaces.nsIWebProgressListener.STATE_START;  
@@ -27,66 +28,84 @@ var DeSopaListener = false;
 	
 	var deURL = '';
 	var deDomain = '';
+	var deIP = '';
 	var deWindow = false;
 	var deOn = false;
 	var subContent = false;
 	var deTab = false;
-	var deIP = {};
+	var deAddr = {};
 	var deCache = {};
-  	var deConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+  var deConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 
 	//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
 	var DeReq = function(u,f,d,x){ x=this.ActiveXObject;x=new(x?x:XMLHttpRequest)('Microsoft.XMLHTTP');x.timeout=15000;x.open(d?'POST':'GET',u,1);x.setRequestHeader('Content-type','application/x-www-form-urlencoded');x.onreadystatechange=function(){x.readyState>3&&f?f(x.responseText,x):0};x.send(d)};
 	var DeSyn = function(n,a){	
-		deIP[n] = a!=null && typeof a[1] && a[1] ? a[1] : '';
-		if('0' in deIP && '1' in deIP && deIP['0']==deIP['1']){
-			deCache[deDomain]=deIP['0'];
+		deAddr[n] = a!=null && typeof a[1] && a[1] ? a[1] : '';
+		if('0' in deAddr && '1' in deAddr && deAddr['0']==deAddr['1']){
+			deCache[deDomain]=deAddr['0'];
+			deCache[deCache[deDomain]]=deDomain;
 			DeSubRe();	
-		}else if('0' in deIP && '2' in deIP && deIP['0']==deIP['2']){
-			deCache[deDomain]=deIP['0'];
+		}else if('0' in deAddr && '2' in deAddr && deAddr['0']==deAddr['2']){
+			deCache[deDomain]=deAddr['0'];
+			deCache[deCache[deDomain]]=deDomain;
 			DeSubRe();	
-		}else if('2' in deIP && '1' in deIP && deIP['2']==deIP['1']){
-			deCache[deDomain]=deIP['2'];
+		}else if('2' in deAddr && '1' in deAddr && deAddr['2']==deAddr['1']){
+			deCache[deDomain]=deAddr['2'];
+			deCache[deCache[deDomain]]=deDomain;
 			DeSubRe();	
-		}else if('2' in deIP && '1' in deIP && '0' in deIP && deIP['2']!=deIP['1'] && deIP['2']!=deIP['0']){
-			deCache[deDomain]=deIP[(new Date).getTime()%3];
+		}else if('2' in deAddr && '1' in deAddr && '0' in deAddr && deAddr['2']!=deAddr['1'] && deAddr['2']!=deAddr['0']){
+			deCache[deDomain]=deAddr[(new Date).getTime()%3];
+			deCache[deCache[deDomain]]=deDomain;
 			DeSubRe();	
-		}else if(!('0' in deIP)){
+		}else if(!('0' in deAddr)){
 			DeNS[0]();
-		}else if(!('1' in deIP)){
+		}else if(!('1' in deAddr)){
 	  	DeNS[1]();
-		}else if(!('2' in deIP)){
+		}else if(!('2' in deAddr)){
 	  	DeNS[2]();
 		}else{
 	  	deCache[deDomain]='';
 		}
 	};
+	
+	DeSopafy = function(o){
+		if(deOn){					
+			deOn = false;
+			o.label = 'DeSopa off';
+			o.style.backgroundColor = '#EDF9FA';
+			o.style.fontWeight = '200';
+		}else{			
+			deOn = true;
+			o.label = 'DeSopa on';
+			o.style.backgroundColor = 'green';	
+			o.style.fontWeight = '600';
+		}		
+	};
 
 	HttpRequestObserver = {
-		observe: function(subject, topic, data){
-    			if (topic == "http-on-modify-request") {
-      				var httpChannel = subject.QueryInterface(Components.interfaces.nsIHttpChannel).setRequestHeader('Host', deDomain, false);
-    			}
-  		},
+  	observe: function(subject, topic, data){
+    	if (topic == "http-on-modify-request") {
+      	var httpChannel = subject.QueryInterface(Components.interfaces.nsIHttpChannel).setRequestHeader('Host', deIP && deCache[deIP] ? deCache[deIP] : deDomain, false);
+    	}
+  	},
     
 		registered : false,
   	
 		get observerService() {
-    			return Components.classes["@mozilla.org/observer-service;1"]
+    	return Components.classes["@mozilla.org/observer-service;1"]
                      .getService(Components.interfaces.nsIObserverService);
-  		},
+  	},
 
-  		register: function() {
-    			this.observerService.addObserver(this, "http-on-modify-request", false);
-    			this.registered = true;
-  		},
+  	register: function() {
+    	this.observerService.addObserver(this, "http-on-modify-request", false);
+    	this.registered = true;
+  	},
 
-  		unregister: function() {
-    			this.observerService.removeObserver(this, "http-on-modify-request");
-    			this.registered = false;
-  		}
+  	unregister: function() {
+    	this.observerService.removeObserver(this, "http-on-modify-request");
+    	this.registered = false;
+  	}
 	};
-
 
 	var DeNS = [
 		function(){DeReq('http://www.kloth.net/services/nslookup.php',function(d){ DeSyn('0', d.match(/Address\:[\r\n\s\t]*([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[\r\n\s\t]*<\/pre>/i))},'d='+deDomain+'&n=localhost&q=A')},
@@ -100,24 +119,11 @@ var DeSopaListener = false;
 	};
 
 	var DeSubRe = function(){
-		subContent = true;	
+		subContent = true;
+		deIP = deCache[deDomain];	
 		document.getElementById('desopa-box').style.display='none';
 		HttpRequestObserver.register();
-		deWindow.location.href=DeRe(deURL);						
-	};
-	
-	DeSopafy = function(o){
-		if(deOn){					
-			deOn = false;
-			o.label = 'DeSopa off';
-			o.style.backgroundColor = 'yellow';
-			o.style.fontWeight = '200';
-		}else{			
-			deOn = true;
-			o.label = 'DeSopa on';
-			o.style.backgroundColor = 'green';	
-			o.style.fontWeight = '600';
-		}		
+		deWindow.location.href=DeRe(deURL);			
 	};
 
 	DeSopaListener = {
@@ -131,43 +137,50 @@ var DeSopaListener = false;
 		},  
 
   	onLocationChange: function(progress, request, location)  {  
-    
+      
   		if(DE_STATE_START && deOn && request!=null && !location.spec.match(/^about\:/i)) { 
-  			//foo.1.2.3.4 won't work anyway. Need a workaround for subdomains.
-				if(location.spec.match(/^(?:[a-z0-9]+:\/\/)?(?:[a-z0-9\-]+\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i)){	
+  		
+				if(location.spec.match(/^(?:[a-z0-9]+:\/\/)?(?:[a-z0-9\-]+\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i)){						
 					subContent = true;
-					if(!HttpRequestObserver.registered) HttpRequestObserver.register();
+					var oct = (location.spec.replace(/\/.*$/g,'')).split('.');
+					oct = oct.reverse();
+					deIP = oct[3]+'.'+oct[2]+'.'+oct[1]+'.'+oct[0];					
+					if(!HttpRequestObserver.registered) HttpRequestObserver.register(); 					
 				}else{
 					deURL = location.spec;
 					deDomain = deURL.replace(/^(?:[a-z0-9]+:\/\/)|(?:\/.*)$/ig,'');
-					deWindow = progress.DOMWindow;			
-					//deConsole.logStringMessage( deDomain );		
+					deWindow = progress.DOMWindow;								
 					request.cancel(DE_NS_BINDING_ABORTED);
 					if(deDomain in deCache){ 
 						if(deCache[deDomain]) DeSubRe();					
 					}else{
-						deIP = {};
+						deAddr = {};
 						//document.getElementById('desopa-box').innerHTML='Resolving and caching IP for '+deDomain+'...';
 						document.getElementById('desopa-box').style.display='block';
 						DeNS[(new Date).getTime()%3]();			
 													
 					}
 				}													
-			}		  
+			}			  
   	},    
-  
+        
   	onStateChange: function(progress, request, flag, status)  {  		
 			if(DE_STATE_START && deOn && flag && subContent && request!=null && request.name.match(/^(?:[a-z0-9]+:\/\/)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i) && deWindow.document.head.innerHTML!=null){
-				subContent = false;
 				if(HttpRequestObserver.registered) HttpRequestObserver.unregister();
+				subContent = false;
 				deWindow.document.head.innerHTML = DeRe(deWindow.document.head.innerHTML);
 				deWindow.document.body.innerHTML = DeRe(deWindow.document.body.innerHTML);  	
-			}  
+			}
   	},
-   
-  	onProgressChange: function(a, b, c, d, e, f) {},  
-  	onStatusChange: function(a, b, c, d) {},  
-  	onSecurityChange: function(a, b, c) {}  
+  	   
+  	onProgressChange: function(a, b, c, d, e, f) {		
+			if(deOn && !HttpRequestObserver.registered){
+				HttpRequestObserver.register();
+			}
+			
+		},  
+  	onStatusChange: function(a, b, c, d) { },  
+  	onSecurityChange: function(a, b, c) { }  
 	};
 
 	SetupDeSopa = {
