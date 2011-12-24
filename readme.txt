@@ -1,4 +1,4 @@
-# DeSopa v1.2 
+# DeSopa v1.4 
 
 Download link and open with Firefox to install: 
 https://github.com/downloads/TamerRizk/desopa/DeSopa.xpi
