@@ -6,20 +6,20 @@
   
     <em:id>desopa@congress.public</em:id>
     <em:name>DeSopa</em:name>
-    <em:version>1.2</em:version>
+    <em:version>1.4</em:version>
     <em:type>2</em:type>
     <em:description>DNS Evasion to Stop Oppressive Policy in America</em:description>
     <em:creator>Net citizen</em:creator>
     <!-- optional items -->
     <em:contributor>John Q. Public</em:contributor>
     <em:homepageURL>http://www.desopa.org</em:homepageURL>
-     																						 s
+     																						 
     <!-- Firefox -->
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>3.6</em:minVersion>
-        <em:maxVersion>9.*</em:maxVersion>
+        <em:maxVersion>12.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 
