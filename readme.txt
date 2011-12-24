@@ -40,6 +40,7 @@ III. KNOWN LIMITATIONS:
 ---------------------------------------
 - Can only resolve tabs one at a time.
 - First time resolution is a bit slow because three services are checked serially and compared. This may be done in parallel in the future, or a trusted single source may be used.
+- Page elements are not resolved to IP unless the element's host has been otherwise accessed by the user.
 
 IV. HOW IT WORKS:
 ---------------------------------
