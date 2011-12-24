@@ -93,8 +93,14 @@ var DESOPA = new function() {
 	
 	var HttpRequestObserver = {
   	observe: function(subject, topic, data){
-    	if (topic == "http-on-modify-request") {			
-      	var httpChannel = subject.QueryInterface(Components.interfaces.nsIHttpChannel).setRequestHeader('Host', deIP && deCache[deIP] ? deCache[deIP] : deDomain, false);
+    	if (topic == "http-on-modify-request") {
+				var host = (subject.QueryInterface(Components.interfaces.nsIHttpChannel).getRequestHeader('Host')).replace(/^(?:[a-z0-9]+:\/\/)?|(?:\/.*)$/g,'');		
+				if(host.match(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i)){
+					var oct = host.split('.');
+					oct = oct.reverse();
+					oct[0] = oct[3]+'.'+oct[2]+'.'+oct[1]+'.'+oct[0];												
+					subject.QueryInterface(Components.interfaces.nsIHttpChannel).setRequestHeader('Host', deCache[oct[0]] ? deCache[oct[0]] : host, false);									
+				}			
     	}
   	},
     
