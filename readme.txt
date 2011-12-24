@@ -13,7 +13,7 @@ V. HOW IT WORKS
 
 I. DISCLAIMER:
 ---------------
-IMPORTANT: DeSopa is meant to be a proof of concept to show that there are severe issues with SOPA, and that legislation of SOPA will result in various technical problems and workarounds. DeSopa resolves IP addresses by consulting offshore servers for which DeSopa and its author have not control. You are strongly advised not to use DeSopa while entering any private or personal information, unless you verify the accuracy of the IP address you are contacting yourself.
+IMPORTANT: DeSopa is meant to be a proof of concept to show that there are severe issues with SOPA, and that legislation of SOPA will result in various technical problems and workarounds. DeSopa resolves IP addresses by consulting offshore servers for which DeSopa and its author have no control. You are strongly advised not to use DeSopa while entering any private or personal information, unless you verify the accuracy of the IP address you are contacting yourself.
 
 II. ABOUT:
 ---------------
