@@ -1,5 +1,6 @@
 /*
-
+		DeSopa v1.4
+		
 		Copyright (c) 2011 - 2012 Tamer Rizk (trizk@inficron.com)
 		
     This program is free software: you can redistribute it and/or modify
@@ -17,10 +18,7 @@
 
 */
 
-var DeSopafy = false;
-var DeSopaListener = false;
-var HttpRequestObserver = false;
-(function(window,document,undefined){
+var DESOPA = new function() {
 
 	const DE_STATE_START = Components.interfaces.nsIWebProgressListener.STATE_START;  
 	const DE_STATE_STOP = Components.interfaces.nsIWebProgressListener.STATE_STOP;  
@@ -35,9 +33,34 @@ var HttpRequestObserver = false;
 	var deTab = false;
 	var deAddr = {};
 	var deCache = {};
-  var deConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+	
+  //var deConsole = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+	//deConsole.logStringMessage('');
 
-	//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+	this.DeSopafy = function(o){
+		if(deOn){					
+			deOn = false;
+			o.label = 'DeSopa off';
+			o.style.backgroundColor = '#EDF9FA';
+			o.style.fontWeight = '200';
+		}else{			
+			deOn = true;
+			o.label = 'DeSopa on';
+			o.style.backgroundColor = 'green';	
+			o.style.fontWeight = '600';
+		}		
+	};
+	
+	this.Setup = {
+  	init: function() { 
+   		gBrowser.addProgressListener(DeSopaListener);  
+  	},  
+    
+  	uninit: function() {  
+    	gBrowser.removeProgressListener(DeSopaListener);  
+  	},  
+	};
+	
 	var DeReq = function(u,f,d,x){ x=this.ActiveXObject;x=new(x?x:XMLHttpRequest)('Microsoft.XMLHTTP');x.timeout=15000;x.open(d?'POST':'GET',u,1);x.setRequestHeader('Content-type','application/x-www-form-urlencoded');x.onreadystatechange=function(){x.readyState>3&&f?f(x.responseText,x):0};x.send(d)};
 	var DeSyn = function(n,a){	
 		deAddr[n] = a!=null && typeof a[1] && a[1] ? a[1] : '';
@@ -68,23 +91,9 @@ var HttpRequestObserver = false;
 		}
 	};
 	
-	DeSopafy = function(o){
-		if(deOn){					
-			deOn = false;
-			o.label = 'DeSopa off';
-			o.style.backgroundColor = '#EDF9FA';
-			o.style.fontWeight = '200';
-		}else{			
-			deOn = true;
-			o.label = 'DeSopa on';
-			o.style.backgroundColor = 'green';	
-			o.style.fontWeight = '600';
-		}		
-	};
-
-	HttpRequestObserver = {
+	var HttpRequestObserver = {
   	observe: function(subject, topic, data){
-    	if (topic == "http-on-modify-request") {
+    	if (topic == "http-on-modify-request") {			
       	var httpChannel = subject.QueryInterface(Components.interfaces.nsIHttpChannel).setRequestHeader('Host', deIP && deCache[deIP] ? deCache[deIP] : deDomain, false);
     	}
   	},
@@ -92,8 +101,7 @@ var HttpRequestObserver = false;
 		registered : false,
   	
 		get observerService() {
-    	return Components.classes["@mozilla.org/observer-service;1"]
-                     .getService(Components.interfaces.nsIObserverService);
+    	return Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
   	},
 
   	register: function() {
@@ -126,7 +134,7 @@ var HttpRequestObserver = false;
 		deWindow.location.href=DeRe(deURL);			
 	};
 
-	DeSopaListener = {
+	var DeSopaListener = {
 
 		QueryInterface: function(aIID)  {  
   		if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||  
@@ -138,18 +146,17 @@ var HttpRequestObserver = false;
 
   	onLocationChange: function(progress, request, location)  {  
       
-  		if(DE_STATE_START && deOn && request!=null && !location.spec.match(/^about\:/i)) { 
-  		
+  		if(DE_STATE_START && deOn && request!=null && !location.spec.match(/^about\:/i)) {   		
 				if(location.spec.match(/^(?:[a-z0-9]+:\/\/)?(?:[a-z0-9\-]+\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i)){						
 					subContent = true;
-					var oct = (location.spec.replace(/\/.*$/g,'')).split('.');
+					var oct = (location.spec.replace(/^(?:[a-z0-9]+:\/\/)?|(?:\/.*)$/g,'')).split('.');
 					oct = oct.reverse();
-					deIP = oct[3]+'.'+oct[2]+'.'+oct[1]+'.'+oct[0];					
+					deIP = oct[3]+'.'+oct[2]+'.'+oct[1]+'.'+oct[0];			
 					if(!HttpRequestObserver.registered) HttpRequestObserver.register(); 					
 				}else{
 					deURL = location.spec;
 					deDomain = deURL.replace(/^(?:[a-z0-9]+:\/\/)|(?:\/.*)$/ig,'');
-					deWindow = progress.DOMWindow;								
+					deWindow = progress.DOMWindow;						
 					request.cancel(DE_NS_BINDING_ABORTED);
 					if(deDomain in deCache){ 
 						if(deCache[deDomain]) DeSubRe();					
@@ -157,15 +164,14 @@ var HttpRequestObserver = false;
 						deAddr = {};
 						//document.getElementById('desopa-box').innerHTML='Resolving and caching IP for '+deDomain+'...';
 						document.getElementById('desopa-box').style.display='block';
-						DeNS[(new Date).getTime()%3]();			
-													
+						DeNS[(new Date).getTime()%3]();																
 					}
 				}													
 			}			  
   	},    
         
   	onStateChange: function(progress, request, flag, status)  {  		
-			if(DE_STATE_START && deOn && flag && subContent && request!=null && request.name.match(/^(?:[a-z0-9]+:\/\/)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i) && deWindow.document.head.innerHTML!=null){
+			if(DE_STATE_START && deOn && flag && subContent && request!=null && request.name.match(/^(?:[a-z0-9]+:\/\/)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i) && deWindow.document!=null && deWindow.document.head!=null && deWindow.document.head.innerHTML!=null){
 				if(HttpRequestObserver.registered) HttpRequestObserver.unregister();
 				subContent = false;
 				deWindow.document.head.innerHTML = DeRe(deWindow.document.head.innerHTML);
@@ -176,24 +182,14 @@ var HttpRequestObserver = false;
   	onProgressChange: function(a, b, c, d, e, f) {		
 			if(deOn && !HttpRequestObserver.registered){
 				HttpRequestObserver.register();
-			}
-			
-		},  
+			}			
+		}, 
+		 
   	onStatusChange: function(a, b, c, d) { },  
   	onSecurityChange: function(a, b, c) { }  
 	};
 
-	SetupDeSopa = {
-
-  	init: function() { 
-   		gBrowser.addProgressListener(DeSopaListener);  
-  	},  
-    
-  	uninit: function() {  
-    	gBrowser.removeProgressListener(DeSopaListener);  
-  	},  
-	};
-})(this,document);				
-
-window.addEventListener("load", function() {SetupDeSopa.init()}, false);  
-window.addEventListener("unload", function() {SetupDeSopa.uninit()}, false);		
+};				
+ 
+window.addEventListener("load", function() {DESOPA.Setup.init()}, false);  
+window.addEventListener("unload", function() {DESOPA.Setup.uninit()}, false);		
