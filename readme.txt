@@ -5,12 +5,17 @@ https://github.com/downloads/TamerRizk/desopa/DeSopa.xpi
 
 SECTIONS:
 ------------------
-I. ABOUT
-II. HOW TO USE
-III. KNOWN LIMITATIONS
-IV. HOW IT WORKS
+I. DISCLAIMER
+II. ABOUT
+III. HOW TO USE
+IV. KNOWN LIMITATIONS
+V. HOW IT WORKS
 
-I. ABOUT:
+I. DISCLAIMER:
+---------------
+IMPORTANT: DeSopa is meant to be a proof of concept to show that there are technical problems with SOPA, and that legislation of SOPA will result in various technical problems and workarounds. DeSopa resolves IP addresses by consulting offshore servers for which DeSopa and its author have not control. You are strongly advised not to use DeSopa while entering any private or personal information, unless you verify the accuracy of the IP address you are contacting yourself.
+
+II. ABOUT:
 ---------------
 Powerful special interests are attempting to force legislation for tighter control of the Internet, because they believe such legislation will preserve their power. The bill they have sponsored, SOPA, not only has severe consequences for the Internet, it doesn't even achieve their objectives. SOPA, under the innocuous banner "Stop Online Piracy Act" will have the following repercussions:
 
@@ -30,19 +35,19 @@ If SOPA is implemented, thousands of similar and more innovative programs and se
 
 Please bring this to the attention of congressmen responsible for voting on SOPA. SOPA will not technically achieve its stated objectives. Anyone voting in favor of it is morally responsible for destroying the freedoms, innovation, hard work and aspirations of many.
 
-II. HOW TO USE:
+III. HOW TO USE:
 ---------------------------
 - Enable the Status/Add-on bar if it is not enabled (View->Toolbars->Add-on bar)
 - Click on the light blue DeSopa button in the Status/Add-on bar, at the bottom of the browser window, to access websites by IP.
 - Click the green DeSopa button to switch back to DNS resolution.
 
-III. KNOWN LIMITATIONS:
+IV. KNOWN LIMITATIONS:
 ---------------------------------------
 - Can only resolve tabs one at a time.
 - First time resolution is a bit slow because three services are checked serially and compared. This may be done in parallel in the future, or a trusted single source may be used.
 - Page elements are not resolved to IP unless the element's host has been otherwise accessed by the user.
 
-IV. HOW IT WORKS:
+V. HOW IT WORKS:
 ---------------------------------
 When turned on, DeSopa intercepts URLs, sends the base URL to three offshore DNS services via HTTP, makes a best effort to check that two of them are equivalent, caches the IP for the browser session, redirects to the equivalent URL using the IP, and substitutes out the domain name in the source code with the IP address for future requests.
 
