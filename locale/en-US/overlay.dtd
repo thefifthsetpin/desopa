@@ -1,1 +1,3 @@
 <!ENTITY desopa "DeSopa">
+<!ENTITY desopa.off "DeSopa off">
+<!ENTITY resolving.ip.address.message "Resolving and caching IP address. This may take a few seconds.">
